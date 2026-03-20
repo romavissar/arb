@@ -29,7 +29,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Dashboard header shows Kalshi market count; count displays in red when it reaches zero
   4. Startup health check reports Kalshi API status before the poll loop begins — pass or fail is visible in terminal
   5. Sports exclusion behavior can be toggled via env var without code changes
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
 - [ ] 01-01-PLAN.md — Replace Kalshi discovery with direct /markets pagination + 401 circuit breaker + sports env var
@@ -77,7 +77,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. API Connectivity and Observability | 0/2 | Planning complete | - |
+| 1. API Connectivity and Observability | 1/2 | In Progress|  |
 | 2. Short-Term Discovery | 0/TBD | Not started | - |
 | 3. Match Quality | 0/TBD | Not started | - |
 | 4. Display and UX | 0/TBD | Not started | - |

@@ -9,12 +9,12 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Kalshi API Connectivity
 
-- [ ] **KAPI-01**: Screener works without API authentication — uses Kalshi public endpoints that don't require auth (no `KALSHI_API_KEY` needed)
-- [ ] **KAPI-02**: Screener distinguishes 401 (endpoint requires auth — skip/fallback) from 429 (rate limit — backoff) from 5xx (transient — retry) and handles each appropriately
+- [x] **KAPI-01**: Screener works without API authentication — uses Kalshi public endpoints that don't require auth (no `KALSHI_API_KEY` needed)
+- [x] **KAPI-02**: Screener distinguishes 401 (endpoint requires auth — skip/fallback) from 429 (rate limit — backoff) from 5xx (transient — retry) and handles each appropriately
 - [ ] **KAPI-03**: Screener logs and surfaces API errors clearly instead of silently swallowing them
 - [ ] **KAPI-04**: Screener performs startup health check validating Kalshi API connectivity before starting poll loop
 - [ ] **KAPI-05**: Dashboard displays Kalshi market count prominently; shows red alarm when count is zero
-- [ ] **KAPI-06**: Sports event exclusion is configurable via env var (not hardcoded)
+- [x] **KAPI-06**: Sports event exclusion is configurable via env var (not hardcoded)
 
 ### Short-Term Discovery
 
@@ -84,12 +84,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| KAPI-01 | Phase 1 | Pending |
-| KAPI-02 | Phase 1 | Pending |
+| KAPI-01 | Phase 1 | Complete |
+| KAPI-02 | Phase 1 | Complete |
 | KAPI-03 | Phase 1 | Pending |
 | KAPI-04 | Phase 1 | Pending |
 | KAPI-05 | Phase 1 | Pending |
-| KAPI-06 | Phase 1 | Pending |
+| KAPI-06 | Phase 1 | Complete |
 | DISC-01 | Phase 2 | Pending |
 | DISC-02 | Phase 2 | Pending |
 | DISC-03 | Phase 2 | Pending |
