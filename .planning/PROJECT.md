@@ -33,7 +33,7 @@ Find the maximum number of real, actionable arbitrage opportunities across both 
 
 <!-- Current scope. Building toward these. -->
 
-- [ ] Kalshi API optimization — maximize market discovery without hitting rate limits
+- [x] Kalshi API optimization — maximize market discovery without hitting rate limits (Validated in Phase 01: API Connectivity & Observability)
 - [ ] Short-term market prioritization — fetch and match markets expiring within 7 days first
 - [ ] Improved opportunity volume — find significantly more arb opportunities per session
 - [ ] Display ranking by time horizon — short-term opportunities shown first, then longer-dated
@@ -53,7 +53,7 @@ Find the maximum number of real, actionable arbitrage opportunities across both 
 ## Context
 
 - The screener currently finds very few opportunities (1 after an hour of running)
-- Kalshi API may not be working optimally — needs investigation
+- Phase 01 complete — Kalshi API now uses direct `/markets?status=open` cursor pagination instead of broken event fan-out. 401 circuit breaker prevents cascading failures. Health check and zero-count alarms added.
 - ~30K Polymarket markets and ~1,200 Kalshi markets are discovered per cycle
 - Only 3 matched pairs found across 763K candidates evaluated — matching or discovery may be too restrictive
 - Short-term markets are the priority because they're closest to resolution and most likely to have price discrepancies
@@ -73,7 +73,7 @@ Find the maximum number of real, actionable arbitrage opportunities across both 
 | Keep min profit at 0.8% | User preference — only show worthwhile opportunities | — Pending |
 | Rank short-term higher (not filter) | Still want to see longer-dated arbs, just prioritize short-term | — Pending |
 | Focus on coverage before execution | No point building bots if screener can't find arbs | — Pending |
-| Investigate Kalshi API first | Likely bottleneck — only 1,200 markets vs 30K Polymarket | — Pending |
+| Investigate Kalshi API first | Likely bottleneck — only 1,200 markets vs 30K Polymarket | ✓ Done (Phase 01) |
 
 ---
-*Last updated: 2026-03-20 after initialization*
+*Last updated: 2026-03-20 after Phase 01 completion*
