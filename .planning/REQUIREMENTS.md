@@ -84,34 +84,34 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| KAPI-01 | — | Pending |
-| KAPI-02 | — | Pending |
-| KAPI-03 | — | Pending |
-| KAPI-04 | — | Pending |
-| KAPI-05 | — | Pending |
-| KAPI-06 | — | Pending |
-| DISC-01 | — | Pending |
-| DISC-02 | — | Pending |
-| DISC-03 | — | Pending |
-| DISC-04 | — | Pending |
-| DISC-05 | — | Pending |
-| DISC-06 | — | Pending |
-| MATC-01 | — | Pending |
-| MATC-02 | — | Pending |
-| MATC-03 | — | Pending |
-| MATC-04 | — | Pending |
-| MATC-05 | — | Pending |
-| MATC-06 | — | Pending |
-| DISP-01 | — | Pending |
-| DISP-02 | — | Pending |
-| DISP-03 | — | Pending |
-| DISP-04 | — | Pending |
+| KAPI-01 | Phase 1 | Pending |
+| KAPI-02 | Phase 1 | Pending |
+| KAPI-03 | Phase 1 | Pending |
+| KAPI-04 | Phase 1 | Pending |
+| KAPI-05 | Phase 1 | Pending |
+| KAPI-06 | Phase 1 | Pending |
+| DISC-01 | Phase 2 | Pending |
+| DISC-02 | Phase 2 | Pending |
+| DISC-03 | Phase 2 | Pending |
+| DISC-04 | Phase 2 | Pending |
+| DISC-05 | Phase 2 | Pending |
+| DISC-06 | Phase 2 | Pending |
+| MATC-01 | Phase 3 | Pending |
+| MATC-02 | Phase 3 | Pending |
+| MATC-03 | Phase 3 | Pending |
+| MATC-04 | Phase 3 | Pending |
+| MATC-05 | Phase 3 | Pending |
+| MATC-06 | Phase 3 | Pending |
+| DISP-01 | Phase 4 | Pending |
+| DISP-02 | Phase 4 | Pending |
+| DISP-03 | Phase 4 | Pending |
+| DISP-04 | Phase 4 | Pending |
 
 **Coverage:**
 - v1 requirements: 22 total
-- Mapped to phases: 0
-- Unmapped: 22 (pending roadmap creation)
+- Mapped to phases: 22
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-20*
-*Last updated: 2026-03-20 after initial definition*
+*Last updated: 2026-03-20 after roadmap creation*
