@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-03-20T15:13:21.619Z"
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-03-20T15:19:10.845Z"
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
+  completed_plans: 2
 ---
 
 # Project State
@@ -46,6 +46,7 @@ Plan: 2 of 2
 - Trend: baseline
 
 *Updated after each plan completion*
+| Phase 01 P02 | 5 | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -59,6 +60,8 @@ Recent decisions affecting current work:
 - [Project]: Keep min profit at 0.8%; rank short-term higher (don't filter out longer-dated)
 - [Phase 01-api-connectivity-and-observability]: Direct /markets?status=open pagination replaces events fan-out — reduces 300+ requests to ~6-10 per cycle
 - [Phase 01-api-connectivity-and-observability]: KalshiAuthError class with 401 circuit breaker — session-level disable flag prevents cascading failures
+- [Phase 01]: Health check is diagnostic only — does not block poll loop even on auth_error or unreachable
+- [Phase 01]: Zero-count alarm gated on totalCycles > 0 to avoid false positives during startup
 
 ### Pending Todos
 
@@ -71,6 +74,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T15:13:21.617Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-03-20T15:19:10.844Z
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None
