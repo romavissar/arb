@@ -27,7 +27,7 @@ import {
   initDb, startSession, updateSession, endSession, closeDb, getHistoricalStats,
 } from "./core/persistence.js";
 import { scanLog, clearScanLog } from "./core/scanLog.js";
-import type { NormalizedMarket, ArbOpportunity, TrackedOpportunity, SessionStats, MatchedPair, PolymarketMarket, KalshiMarket } from "./types/index.js";
+import type { NormalizedMarket, ArbOpportunity, TrackedOpportunity, SessionStats, MatchedPair, PolymarketMarket, KalshiMarket, KalshiApiStatus } from "./types/index.js";
 
 // ─── Session state ───
 
@@ -415,6 +415,39 @@ async function pollCycle(): Promise<void> {
   });
 }
 
+// ─── Startup health check ───
+
+async function checkKalshiHealth(): Promise<KalshiApiStatus> {
+  if (config.demoMode) {
+    console.log("  Kalshi API:       SKIP (demo mode)");
+    return "ok";
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+  try {
+    const url = "https://api.elections.kalshi.com/trade-api/v2/markets?limit=1&status=open";
+    const res = await fetch(url, { signal: controller.signal, headers: { Accept: "application/json" } });
+    clearTimeout(timeout);
+    if (res.ok) {
+      const body = await res.json() as { markets?: unknown[] };
+      const count = Array.isArray(body.markets) ? body.markets.length : 0;
+      console.log(`  Kalshi API:       OK (public endpoint reachable, got ${count} market(s))`);
+      return "ok";
+    } else if (res.status === 401) {
+      console.log(`  Kalshi API:       FAIL (HTTP 401 — endpoint requires auth)`);
+      return "auth_error";
+    } else {
+      console.log(`  Kalshi API:       FAIL (HTTP ${res.status})`);
+      return "unreachable";
+    }
+  } catch (err) {
+    clearTimeout(timeout);
+    console.log(`  Kalshi API:       FAIL (${err instanceof Error ? err.message : String(err)})`);
+    return "unreachable";
+  }
+}
+
 // ─── Entry point ───
 
 async function main(): Promise<void> {
@@ -443,6 +476,14 @@ async function main(): Promise<void> {
   console.log(`Fees: ${config.useTieredFees ? "volume-tiered" : "flat"} schedule`);
   console.log(`Match cache: LRU max ${config.matchCacheMaxSize} entries`);
   console.log(`Kalshi concurrency: ${config.kalshiDiscoveryConcurrency} parallel event fetches\n`);
+
+  console.log("\n--- Startup Health Check ---");
+  const kalshiHealthStatus = await checkKalshiHealth();
+  console.log("----------------------------\n");
+
+  if (kalshiHealthStatus !== "ok" && !config.demoMode) {
+    console.log("WARNING: Kalshi API not healthy. Kalshi markets may not be discovered.\n");
+  }
 
   startWebServer();
 

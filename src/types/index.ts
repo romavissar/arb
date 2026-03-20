@@ -125,6 +125,10 @@ export interface SessionStats {
   startedAt: Date;
 }
 
+// ─── API Status ───
+
+export type KalshiApiStatus = "unknown" | "ok" | "auth_error" | "unreachable";
+
 // ─── Config ───
 
 export interface Config {
