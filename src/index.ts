@@ -412,6 +412,7 @@ async function pollCycle(): Promise<void> {
     kalshiStaleSeconds: renderState.kalshiStaleSeconds,
     stats,
     demoMode: config.demoMode,
+    kalshiApiStatus: isKalshiDisabled() ? "auth_error" : (kalshiRaw.length > 0 || config.demoMode ? "ok" : "unreachable"),
   });
 }
 
