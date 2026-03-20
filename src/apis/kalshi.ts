@@ -27,6 +27,12 @@ let kalshiHttp429 = 0;
 let kalshiBytesIn = 0;
 /** Increments each discovery run to rotate through lower-priority events. */
 let discoveryRotationIndex = 0;
+/** Session-level flag: set to true if Kalshi API returns 401 (no auth available). */
+let kalshiDisabledDueToAuth = false;
+
+export function isKalshiDisabled(): boolean {
+  return kalshiDisabledDueToAuth;
+}
 
 export function resetKalshiFetchStats(): void {
   kalshiHttp429 = 0;
@@ -255,6 +261,92 @@ async function fetchAllEvents(): Promise<KalshiEvent[]> {
   return events;
 }
 
+async function fetchAllKalshiMarketsDirect(): Promise<KalshiMarket[]> {
+  if (kalshiDisabledDueToAuth) {
+    appendError("[CRITICAL] Kalshi API disabled for this session (401 auth error). Returning empty.");
+    return [];
+  }
+
+  // Step 1: If sports filtering is on, fetch events once for category map
+  let eventCategoryMap: Map<string, string> | null = null;
+  if (config.kalshiExcludeSports) {
+    try {
+      const events = await fetchAllEvents();
+      eventCategoryMap = new Map(events.map((e) => [e.event_ticker, e.category]));
+    } catch (err) {
+      if (err instanceof KalshiAuthError) {
+        kalshiDisabledDueToAuth = true;
+        appendError(`[CRITICAL] Kalshi 401 on events fetch. Discovery disabled for session.`);
+        return [];
+      }
+      appendError(`Kalshi events fetch for category map failed: ${err instanceof Error ? err.message : String(err)}. Proceeding without sports filter.`);
+    }
+  }
+
+  // Step 2: Direct markets pagination
+  const allRawMarkets: KalshiApiMarket[] = [];
+  let cursor = "";
+  const MAX_PAGES = config.kalshiEventsDiscoveryMaxPages;
+
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), config.requestTimeoutMs + 3000);
+
+    try {
+      const url = new URL(`${BASE_URL}/markets`);
+      url.searchParams.set("limit", String(config.kalshiPageSize));
+      url.searchParams.set("status", "open");
+      if (cursor) url.searchParams.set("cursor", cursor);
+
+      const body = await kalshiFetchJson<KalshiMarketsResponse>(url.toString(), controller.signal);
+      const data = body.markets ?? [];
+      allRawMarkets.push(...data);
+      scanLog("info", "fetch-kalshi", `Direct markets page ${page + 1}: ${data.length} markets`, `running total: ${allRawMarkets.length}`);
+
+      cursor = body.cursor ?? "";
+      if (!cursor || data.length === 0) break;
+    } catch (err) {
+      if (err instanceof KalshiAuthError) {
+        kalshiDisabledDueToAuth = true;
+        appendError(`[CRITICAL] Kalshi 401 on /markets. Discovery disabled for session.`);
+        break;
+      }
+      appendError(`Kalshi direct market fetch error: ${err instanceof Error ? err.message : String(err)}`);
+      break;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  // Step 3: Filter and convert to KalshiMarket[]
+  const markets: KalshiMarket[] = [];
+  for (const raw of allRawMarkets) {
+    if (raw.status !== "active") continue;
+
+    // Sports filter using event category map
+    if (config.kalshiExcludeSports && eventCategoryMap) {
+      const category = eventCategoryMap.get(raw.event_ticker);
+      if (category && isSportsEventCategory(category)) continue;
+    }
+
+    const yesAsk = parsePrice(raw.yes_ask_dollars, raw.yes_ask);
+    const noAsk = parsePrice(raw.no_ask_dollars, raw.no_ask);
+    markets.push({
+      ticker: raw.ticker,
+      title: raw.title || "",
+      yes_ask: yesAsk,
+      no_ask: noAsk,
+      volume: raw.volume ?? 0,
+      close_time: raw.close_time ?? "",
+      status: raw.status,
+      event_ticker: raw.event_ticker ?? "",
+    });
+  }
+
+  scanLog("success", "fetch-kalshi", `Direct discovery complete: ${markets.length} active markets`, `from ${allRawMarkets.length} raw results`);
+  return markets;
+}
+
 async function fetchMarketsForEvent(eventTicker: string): Promise<KalshiApiMarket[]> {
   const markets: KalshiApiMarket[] = [];
   let cursor = "";
@@ -342,25 +434,7 @@ async function fetchMarketsForEventsBatch(
 
 export async function fetchAllKalshiMarkets(): Promise<KalshiMarket[]> {
   discoveryRotationIndex++;
-  const events = await fetchAllEvents();
-
-  const relevantEvents = selectDiscoveryEvents(events);
-  scanLog("info", "fetch-kalshi", `Selected ${relevantEvents.length} relevant events from ${events.length} total`, `concurrency: ${config.kalshiDiscoveryConcurrency}`);
-
-  // Debug: log event titles to file
-  try {
-    const { appendFileSync } = await import("fs");
-    appendFileSync("match-debug.log", `\n[KALSHI EVENTS] ${relevantEvents.length} selected events:\n`);
-    relevantEvents.slice(0, 30).forEach((e, i) =>
-      appendFileSync("match-debug.log", `  ${i+1}. "${e.title}" (cat: ${e.category}, ticker: ${e.event_ticker})\n`)
-    );
-    if (relevantEvents.length > 30) appendFileSync("match-debug.log", `  ... and ${relevantEvents.length - 30} more\n`);
-  } catch {}
-  const concurrency = config.kalshiDiscoveryConcurrency;
-
-  const markets = await fetchMarketsForEventsBatch(relevantEvents, concurrency);
-  scanLog("success", "fetch-kalshi", `Discovery complete: ${markets.length} active markets`, `from ${relevantEvents.length} events`);
-  return markets;
+  return fetchAllKalshiMarketsDirect();
 }
 
 async function fetchMarketsForEventTargets(
