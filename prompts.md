@@ -1,1 +1,0 @@
-ok currently it is finding multiple matches but it is only showing one in the main dashboard. it has been running for about an hour so consider that. even the event it is showing however is closing in 286 days. I want to do quick arbitrage daily. i need you to 
