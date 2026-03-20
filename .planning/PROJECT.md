@@ -64,7 +64,7 @@ Find the maximum number of real, actionable arbitrage opportunities across both 
 - **Rate Limits**: Must respect both platform rate limits — Polymarket (10 RPS), Kalshi (adaptive 1.5–4 RPS)
 - **Tech Stack**: TypeScript/Node.js, no framework changes — keep it lean
 - **Data Source**: Polymarket uses Gamma API (indicative prices, not CLOB) — acceptable for screening
-- **No Auth Required**: Kalshi public API is sufficient; no API key needed for read access
+- **No Auth Available**: User does not have a Kalshi API key; must use unauthenticated public endpoints only
 
 ## Key Decisions
 
